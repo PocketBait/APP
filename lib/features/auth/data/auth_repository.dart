@@ -147,6 +147,11 @@ class AuthRepository {
       final response = await _client.auth.signUp(
         email: email.trim(),
         password: password,
+        // Sin esto, el link del correo de confirmación usa el "Site URL"
+        // fijo del dashboard de Supabase en vez de a dónde sea que esté
+        // publicada la app ahora mismo (mismo motivo que en signInWithGoogle
+        // y resetPassword).
+        emailRedirectTo: kIsWeb ? _webAppBaseUrl : null,
         data: {
           'username': username.trim().toLowerCase(),
           'full_name': fullName.trim(),
