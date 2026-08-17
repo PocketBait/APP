@@ -52,7 +52,48 @@ class SignInController extends StateNotifier<AsyncValue<void>> {
 
   Future<void> signInWithApple() => _run(_repository.signInWithApple);
 
+  Future<void> signInWithEmailOrUsername({
+    required String identifier,
+    required String password,
+  }) =>
+      _run(() => _repository.signInWithEmailOrUsername(
+            identifier: identifier,
+            password: password,
+          ));
+
+  Future<void> resetPassword(String email) =>
+      _run(() => _repository.resetPassword(email));
+
+  Future<void> updatePassword(String newPassword) =>
+      _run(() => _repository.updatePassword(newPassword));
+
   Future<void> signOut() => _run(_repository.signOut);
+
+  /// Devuelve `true`/`false` según si hace falta confirmar el correo, o
+  /// `null` si hubo un error (ya queda reflejado en `state` para que la
+  /// pantalla lo muestre igual que los demás métodos de este controller).
+  Future<bool?> signUpWithEmail({
+    required String email,
+    required String password,
+    required String username,
+    required String fullName,
+    required String phone,
+    required DateTime dateOfBirth,
+  }) async {
+    state = const AsyncValue.loading();
+    final result = await AsyncValue.guard(() => _repository.signUpWithEmail(
+          email: email,
+          password: password,
+          username: username,
+          fullName: fullName,
+          phone: phone,
+          dateOfBirth: dateOfBirth,
+        ));
+    state = result.hasError
+        ? AsyncValue<void>.error(result.error!, result.stackTrace!)
+        : const AsyncValue.data(null);
+    return result.valueOrNull;
+  }
 
   Future<void> _run(Future<void> Function() action) async {
     state = const AsyncValue.loading();

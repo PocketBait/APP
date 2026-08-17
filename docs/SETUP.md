@@ -27,9 +27,15 @@ Tiempo estimado: 30-45 minutos la primera vez.
    de este repo, copia **todo** su contenido, pégalo en el editor de
    Supabase, y dale **Run** (▶️).
    - Debería decir "Success. No rows returned".
-4. Repite el mismo paso con
-   [`supabase/migrations/0002_views.sql`](../supabase/migrations/0002_views.sql)
-   (en ese orden — primero 0001, después 0002).
+4. Repite el mismo paso, en este orden, con:
+   - [`supabase/migrations/0002_views.sql`](../supabase/migrations/0002_views.sql)
+   - [`supabase/migrations/0003_email_password_auth.sql`](../supabase/migrations/0003_email_password_auth.sql)
+     (agrega el login con correo/usuario + contraseña, además de
+     Google/Apple)
+
+> Si ya habías corrido 0001 y 0002 antes y solo agregaron
+> `0003_email_password_auth.sql` después, nada más corre ese archivo
+> nuevo — no hace falta repetir los anteriores.
 
 Con esto ya tienes las tablas, los permisos de seguridad (Row Level
 Security) y las vistas listas.
@@ -75,6 +81,23 @@ Security) y las vistas listas.
 3. Activa la opción **"Skip nonce checks"** — sin esto, el login de Google
    en iOS falla (es un detalle técnico del flujo nativo que usamos).
 4. Guarda.
+
+### 2.3 El login con correo/usuario + contraseña ya viene activado
+
+Supabase trae el proveedor de "Email" activado por default, no necesitas
+configurar nada extra para que funcione el registro y login con
+correo/usuario + contraseña. Dos cosas a tener en cuenta:
+
+- En **Authentication → Providers → Email**, el interruptor **"Confirm
+  email"** decide si un usuario nuevo puede iniciar sesión de inmediato o
+  primero tiene que confirmar su correo con un link. Está activado por
+  default (más seguro) — déjalo así salvo que quieras probar más rápido
+  sin ese paso.
+- El correo de confirmación y el de "olvidé mi contraseña" los manda
+  Supabase automáticamente con su propio servicio (funciona sin
+  configurar nada, con un límite bajo de correos por hora — suficiente
+  para pruebas; para producción real conviene configurar un proveedor de
+  correo propio en **Authentication → Emails**).
 
 ---
 
