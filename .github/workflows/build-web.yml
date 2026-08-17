@@ -1,0 +1,60 @@
+name: Compilar y publicar la versión web
+
+# Se dispara a mano desde la pestaña "Actions" (botón "Run workflow").
+# Publica la app en GitHub Pages para poder abrirla en cualquier
+# navegador (compu, Mac, celular) sin instalar nada. Requiere que en
+# Settings -> Pages -> Source esté elegido "GitHub Actions" (una sola vez).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      # Los valores reales viven en "Settings -> Secrets and variables ->
+      # Actions" de este repo (nunca en el código) — ver docs/SETUP.md.
+      - name: Crear .env desde los secrets del repo
+        run: |
+          cat <<EOF > .env
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY=${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }}
+          GOOGLE_IOS_CLIENT_ID=${{ secrets.GOOGLE_IOS_CLIENT_ID }}
+          EOF
+
+      - run: flutter pub get
+
+      # --base-href debe coincidir con el nombre del repo: GitHub Pages
+      # sirve un repo de proyecto en https://<owner>.github.io/<repo>/.
+      - run: flutter build web --release --base-href /APP/
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -122,7 +122,31 @@ suyo con sus propias claves.
 
 ---
 
-## 5. (Opción rápida) Probar en Android sin instalar nada en tu compu
+## 5. (Opción más rápida) Probar en el navegador, sin instalar nada
+
+Esta es la forma más simple de ver la app funcionando — se publica en una
+URL que abres en Chrome/Edge/Safari, en cualquier compu o celular.
+
+1. Igual que en la sección siguiente, crea los 4 secrets del repo si no
+   lo has hecho (Settings → Secrets and variables → Actions).
+2. Una sola vez: ve a **Settings → Pages** → en "Source" elige
+   **"GitHub Actions"**.
+3. Ve a la pestaña **Actions** → **"Compilar y publicar la versión web"**
+   → **Run workflow** → elige la rama `claude/screen-time-betting-app-iuk66z`
+   → Run workflow.
+4. Espera unos minutos. Cuando termine, en la pestaña **Settings → Pages**
+   va a aparecer la URL pública, algo como
+   `https://pocketbait.github.io/APP/`.
+5. **Importante:** antes de abrirla, ve a tu proyecto de Supabase →
+   **Authentication → URL Configuration** → en **"Redirect URLs"** agrega
+   esa misma URL (`https://pocketbait.github.io/APP/`) y guarda. Sin este
+   paso, Supabase va a rechazar el regreso del login de Google por
+   seguridad.
+
+Con eso, entra a la URL y el botón "Continuar con Google" ya debería
+funcionar de verdad, tal cual en el celular.
+
+## 6. (Alternativa) Probar en Android sin instalar nada en tu compu
 
 Si no quieres instalar Flutter/Android Studio todavía, puedes dejar que
 **GitHub compile el `.apk` por ti** y solo lo descargas:
@@ -146,7 +170,7 @@ Si no quieres instalar Flutter/Android Studio todavía, puedes dejar que
    pida activar "Instalar apps de orígenes desconocidos", es normal para
    apps que no vienen de la Play Store todavía.
 
-## 6. Instalar Flutter y correr la app (para desarrollar de verdad)
+## 7. Instalar Flutter y correr la app (para desarrollar de verdad)
 
 1. Instala el SDK de Flutter siguiendo la [guía oficial](https://docs.flutter.dev/get-started/install)
    para tu sistema operativo.
@@ -167,7 +191,7 @@ botón "Continuar con Google" funcionando de verdad.
 
 ---
 
-## 7. Nota sobre la Fase 2 (apuestas con dinero real)
+## 8. Nota sobre la Fase 2 (apuestas con dinero real)
 
 Antes de activar cualquier funcionalidad de dinero real (apuestas entre
 amigos o grupos), es indispensable:

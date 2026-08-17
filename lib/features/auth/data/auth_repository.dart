@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -33,6 +34,19 @@ class AuthRepository {
   }
 
   Future<void> signInWithGoogle() async {
+    // En web usamos el flujo de redirección estándar de OAuth (abre Google
+    // en la misma pestaña y regresa) en vez del SDK nativo: es el que
+    // funciona en un navegador y reutiliza el mismo Client ID "Web" que ya
+    // configuramos como redirect URI en Google Cloud / Supabase.
+    if (kIsWeb) {
+      try {
+        await _client.auth.signInWithOAuth(OAuthProvider.google);
+      } catch (error) {
+        throw AppException.from(error);
+      }
+      return;
+    }
+
     try {
       await _ensureGoogleSignInReady();
       final account = await _googleSignIn.authenticate();
@@ -97,8 +111,12 @@ class AuthRepository {
   Future<void> signOut() async {
     try {
       await _client.auth.signOut();
-      // No fallar el logout completo si la sesión de Google ya expiró.
-      await _googleSignIn.signOut().catchError((_) {});
+      // En web nunca se inicializó el SDK nativo de Google (se usó
+      // signInWithOAuth), así que no hay nada que cerrar ahí.
+      if (!kIsWeb) {
+        // No fallar el logout completo si la sesión de Google ya expiró.
+        await _googleSignIn.signOut().catchError((_) {});
+      }
     } catch (error) {
       throw AppException.from(error);
     }
