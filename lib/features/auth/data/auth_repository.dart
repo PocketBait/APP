@@ -40,7 +40,13 @@ class AuthRepository {
     // configuramos como redirect URI en Google Cloud / Supabase.
     if (kIsWeb) {
       try {
-        await _client.auth.signInWithOAuth(OAuthProvider.google);
+        // Pasamos explícitamente a dónde regresar: sin esto, Supabase usa
+        // el "Site URL" configurado en su dashboard (por default
+        // localhost), que no coincide con donde esté publicada la app.
+        await _client.auth.signInWithOAuth(
+          OAuthProvider.google,
+          redirectTo: Uri.base.toString(),
+        );
       } catch (error) {
         throw AppException.from(error);
       }
