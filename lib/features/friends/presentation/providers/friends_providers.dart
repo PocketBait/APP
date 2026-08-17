@@ -70,6 +70,37 @@ class FriendActionsController extends StateNotifier<AsyncValue<void>> {
   Future<void> cancel(String requestId) => _run(
       () => _ref.read(friendsRepositoryProvider).cancelFriendRequest(requestId));
 
+  Future<void> removeFriend(String otherUserId) => _run(() {
+        final repository = _ref.read(friendsRepositoryProvider);
+        final userId = _ref.read(requireUserIdProvider);
+        return repository.removeFriend(userId: userId, otherUserId: otherUserId);
+      });
+
+  /// Bloquear también termina la amistad (si existía) — no tiene sentido
+  /// bloquear a alguien y que siga contando como tu amigo.
+  Future<void> blockUser(String otherUserId) => _run(() async {
+        final repository = _ref.read(friendsRepositoryProvider);
+        final userId = _ref.read(requireUserIdProvider);
+        await repository.removeFriend(userId: userId, otherUserId: otherUserId);
+        await repository.blockUser(blockerId: userId, blockedId: otherUserId);
+      });
+
+  Future<void> reportUser({
+    required String otherUserId,
+    required String reason,
+    String? details,
+  }) =>
+      _run(() {
+        final repository = _ref.read(friendsRepositoryProvider);
+        final userId = _ref.read(requireUserIdProvider);
+        return repository.reportUser(
+          reporterId: userId,
+          reportedId: otherUserId,
+          reason: reason,
+          details: details,
+        );
+      });
+
   Future<void> _run(Future<void> Function() action) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(action);
@@ -81,3 +112,10 @@ final friendActionsControllerProvider =
     StateNotifierProvider.autoDispose<FriendActionsController, AsyncValue<void>>(
   (ref) => FriendActionsController(ref),
 );
+
+/// Amigos en común con `otherUserId` — parametrizado por usuario para
+/// poder usarse en cualquier perfil que se abra.
+final mutualFriendsCountProvider =
+    FutureProvider.autoDispose.family<int, String>((ref, otherUserId) {
+  return ref.watch(friendsRepositoryProvider).mutualFriendsCount(otherUserId);
+});

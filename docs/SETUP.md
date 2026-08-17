@@ -32,10 +32,11 @@ Tiempo estimado: 30-45 minutos la primera vez.
    - [`supabase/migrations/0003_email_password_auth.sql`](../supabase/migrations/0003_email_password_auth.sql)
      (agrega el login con correo/usuario + contraseña, además de
      Google/Apple)
+   - [`supabase/migrations/0004_blocks_reports_unfriend.sql`](../supabase/migrations/0004_blocks_reports_unfriend.sql)
+     (dejar de ser amigos, bloquear, reportar, amigos en común)
 
-> Si ya habías corrido 0001 y 0002 antes y solo agregaron
-> `0003_email_password_auth.sql` después, nada más corre ese archivo
-> nuevo — no hace falta repetir los anteriores.
+> Si ya habías corrido migraciones anteriores, nada más corre la(s)
+> nuevas que falten — no hace falta repetir las que ya corriste.
 
 Con esto ya tienes las tablas, los permisos de seguridad (Row Level
 Security) y las vistas listas.

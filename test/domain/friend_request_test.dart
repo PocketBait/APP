@@ -51,4 +51,55 @@ void main() {
       expect(request.isOutgoingFrom('user-b'), isFalse);
     });
   });
+
+  group('relationshipWith', () {
+    test('friends cuando la solicitud entre ambos está accepted', () {
+      final result = relationshipWith(
+        myId: 'user-a',
+        otherId: 'user-b',
+        myRequests: [_requestJson(status: 'accepted')],
+      );
+      expect(result, FriendRelationship.friends);
+    });
+
+    test('requestSentByMe cuando yo soy el requester y sigue pending', () {
+      final result = relationshipWith(
+        myId: 'user-a',
+        otherId: 'user-b',
+        myRequests: [_requestJson(status: 'pending')],
+      );
+      expect(result, FriendRelationship.requestSentByMe);
+    });
+
+    test('requestReceivedFromThem cuando yo soy el addressee y sigue pending',
+        () {
+      final result = relationshipWith(
+        myId: 'user-b',
+        otherId: 'user-a',
+        myRequests: [_requestJson(status: 'pending')],
+      );
+      expect(result, FriendRelationship.requestReceivedFromThem);
+    });
+
+    test('none si la única solicitud entre ambos fue rechazada o cancelada',
+        () {
+      for (final status in ['declined', 'cancelled']) {
+        final result = relationshipWith(
+          myId: 'user-a',
+          otherId: 'user-b',
+          myRequests: [_requestJson(status: status)],
+        );
+        expect(result, FriendRelationship.none, reason: 'status=$status');
+      }
+    });
+
+    test('none cuando no hay ninguna solicitud entre ambos', () {
+      final result = relationshipWith(
+        myId: 'user-a',
+        otherId: 'user-c',
+        myRequests: [_requestJson(status: 'accepted')],
+      );
+      expect(result, FriendRelationship.none);
+    });
+  });
 }

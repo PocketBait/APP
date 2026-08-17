@@ -56,4 +56,44 @@ class FriendRequest {
 
   bool isOutgoingFrom(String userId) =>
       requesterId == userId && status == FriendRequestStatus.pending;
+
+  /// true si esta fila es exactamente entre estas dos personas (en
+  /// cualquier orden).
+  bool isBetween(String userId, String otherUserId) =>
+      (requesterId == userId && addresseeId == otherUserId) ||
+      (requesterId == otherUserId && addresseeId == userId);
+}
+
+/// Con qué situación te encuentras respecto a otra persona — se usa para
+/// decidir qué botón mostrar en resultados de búsqueda ("Agregar" solo
+/// tiene sentido en `none`).
+enum FriendRelationship {
+  none,
+  friends,
+  requestSentByMe,
+  requestReceivedFromThem,
+}
+
+/// Calcula la relación con `otherId` a partir de tus solicitudes ya
+/// conocidas (`myRequests`), sin volver a consultar la base de datos.
+FriendRelationship relationshipWith({
+  required String myId,
+  required String otherId,
+  required List<FriendRequest> myRequests,
+}) {
+  for (final request in myRequests) {
+    if (!request.isBetween(myId, otherId)) continue;
+    switch (request.status) {
+      case FriendRequestStatus.accepted:
+        return FriendRelationship.friends;
+      case FriendRequestStatus.pending:
+        return request.requesterId == myId
+            ? FriendRelationship.requestSentByMe
+            : FriendRelationship.requestReceivedFromThem;
+      case FriendRequestStatus.declined:
+      case FriendRequestStatus.cancelled:
+        continue; // no impide volver a intentarlo
+    }
+  }
+  return FriendRelationship.none;
 }

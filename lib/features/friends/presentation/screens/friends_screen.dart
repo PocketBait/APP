@@ -80,6 +80,9 @@ class _FriendsTab extends ConsumerWidget {
                   leading: ProfileAvatar(profile: friend),
                   title: Text(friend.displayName),
                   subtitle: Text('@${friend.username}'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () =>
+                      context.push('/friends/profile', extra: friend),
                 ),
               );
             },

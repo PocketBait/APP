@@ -18,20 +18,18 @@ class FriendsRepository {
       '*, requester:profiles!friend_requests_requester_id_fkey(*), '
       'addressee:profiles!friend_requests_addressee_id_fkey(*)';
 
-  /// Busca usuarios por username o nombre para agregar como amigo.
-  Future<List<Profile>> searchProfiles(
-    String query, {
-    required String excludeUserId,
-  }) async {
+  /// Busca usuarios por username o nombre para agregar como amigo. Pasa
+  /// por la función `search_profiles` (no una query directa a `profiles`)
+  /// porque ella ya excluye a quien te bloqueó o bloqueaste, y calcula
+  /// cuántos amigos en común tienen.
+  Future<List<Profile>> searchProfiles(String query) async {
     try {
       final trimmed = query.trim();
       if (trimmed.isEmpty) return [];
-      final rows = await _client
-          .from('profiles')
-          .select()
-          .or('username.ilike.%$trimmed%,display_name.ilike.%$trimmed%')
-          .neq('id', excludeUserId)
-          .limit(20);
+      final rows = await _client.rpc(
+        'search_profiles',
+        params: {'p_query': trimmed},
+      );
       return (rows as List)
           .map((row) => Profile.fromJson(row as Map<String, dynamic>))
           .toList();
@@ -90,6 +88,69 @@ class FriendsRepository {
       await _client
           .from('friend_requests')
           .update({'status': 'cancelled'}).eq('id', requestId);
+    } catch (error) {
+      throw AppException.from(error);
+    }
+  }
+
+  /// Termina la amistad (borra la fila entre las dos personas, sin
+  /// importar quién la haya iniciado originalmente). La base de datos
+  /// revoca solita cualquier acceso activo entre ambos (ver trigger
+  /// `on_friend_request_deleted`).
+  Future<void> removeFriend({
+    required String userId,
+    required String otherUserId,
+  }) async {
+    try {
+      await _client.from('friend_requests').delete().or(
+          'and(requester_id.eq.$userId,addressee_id.eq.$otherUserId),'
+          'and(requester_id.eq.$otherUserId,addressee_id.eq.$userId)');
+    } catch (error) {
+      throw AppException.from(error);
+    }
+  }
+
+  Future<void> blockUser({
+    required String blockerId,
+    required String blockedId,
+  }) async {
+    try {
+      await _client.from('blocks').insert({
+        'blocker_id': blockerId,
+        'blocked_id': blockedId,
+      });
+    } catch (error) {
+      throw AppException.from(error);
+    }
+  }
+
+  Future<void> reportUser({
+    required String reporterId,
+    required String reportedId,
+    required String reason,
+    String? details,
+  }) async {
+    try {
+      await _client.from('reports').insert({
+        'reporter_id': reporterId,
+        'reported_id': reportedId,
+        'reason': reason,
+        'details': details,
+      });
+    } catch (error) {
+      throw AppException.from(error);
+    }
+  }
+
+  /// Cuántos amigos en común tienes con `otherUserId` — para mostrar en
+  /// su perfil.
+  Future<int> mutualFriendsCount(String otherUserId) async {
+    try {
+      final result = await _client.rpc(
+        'mutual_friends_count',
+        params: {'p_other_id': otherUserId},
+      );
+      return (result as num).toInt();
     } catch (error) {
       throw AppException.from(error);
     }

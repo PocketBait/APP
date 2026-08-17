@@ -7,7 +7,9 @@ import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/sign_up_screen.dart';
 import '../../features/auth/presentation/screens/update_password_screen.dart';
+import '../../features/friends/domain/profile.dart';
 import '../../features/friends/presentation/screens/add_friend_screen.dart';
+import '../../features/friends/presentation/screens/friend_profile_screen.dart';
 import '../../features/friends/presentation/screens/friends_screen.dart';
 import '../../features/home/presentation/screens/home_shell.dart';
 import '../../features/limits/domain/permission_grant.dart';
@@ -109,6 +111,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/friends/add',
         builder: (context, state) => const AddFriendScreen(),
+      ),
+      GoRoute(
+        path: '/friends/profile',
+        builder: (context, state) =>
+            FriendProfileScreen(profile: state.extra as Profile),
       ),
       GoRoute(
         path: '/limits/grant-access',
