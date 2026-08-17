@@ -39,9 +39,10 @@ jobs:
 
       - run: flutter pub get
 
-      # --base-href debe coincidir con el nombre del repo: GitHub Pages
-      # sirve un repo de proyecto en https://<owner>.github.io/<repo>/.
-      - run: flutter build web --release --base-href /APP/
+      # Con dominio propio (ver web/CNAME) la app se sirve desde la raíz
+      # del subdominio, no desde /APP/ como en la URL default de GitHub
+      # Pages — por eso el base-href es "/".
+      - run: flutter build web --release --base-href /
 
       - uses: actions/configure-pages@v5
 

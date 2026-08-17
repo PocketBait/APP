@@ -169,6 +169,30 @@ URL que abres en Chrome/Edge/Safari, en cualquier compu o celular.
 Con eso, entra a la URL y el botón "Continuar con Google" ya debería
 funcionar de verdad, tal cual en el celular.
 
+### 5.1 (Opcional) Usar tu propio dominio en vez de github.io
+
+El repo ya trae `web/CNAME` apuntando a `app.pocketbait.com` — si usas
+otro dominio, edita ese archivo con el tuyo. Pasos:
+
+1. En GitHub → **Settings → Pages** → sección "Custom domain" → escribe
+   tu subdominio (ej. `app.pocketbait.com`) → **Save**.
+2. En Cloudflare → tu dominio → **DNS** → **Add record**:
+   - Type: **CNAME**
+   - Name: `app` (o el subdominio que hayas elegido)
+   - Target: `<tu-usuario-de-github>.github.io` (ej. `pocketbait.github.io`)
+   - Proxy status: **DNS only** (nube gris, no naranja) — importante, si
+     lo dejas "Proxied" (naranja), GitHub no puede verificar el dominio
+     ni emitir el certificado HTTPS correctamente.
+3. Regresa a GitHub → Settings → Pages y espera a que aparezca la
+   palomita verde junto a tu dominio (puede tardar unos minutos). Cuando
+   esté listo, activa **"Enforce HTTPS"**.
+4. En Supabase → **Authentication → URL Configuration → Redirect URLs**,
+   agrega tu nuevo dominio: `https://app.pocketbait.com/`.
+5. Vuelve a correr el workflow **"Compilar y publicar la versión web"**
+   para que publique con la configuración del dominio nuevo.
+6. Abre `https://app.pocketbait.com` — puede tardar un rato en propagar
+   el DNS la primera vez.
+
 ## 6. (Alternativa) Probar en Android sin instalar nada en tu compu
 
 Si no quieres instalar Flutter/Android Studio todavía, puedes dejar que
