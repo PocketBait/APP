@@ -1,0 +1,36 @@
+name: Compilar APK de Android
+
+# Se dispara a mano desde la pestaña "Actions" de GitHub (botón "Run
+# workflow") — pensado para poder instalar la app en un celular Android sin
+# tener que instalar Flutter/Android Studio en tu computadora.
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      # Los valores reales viven en "Settings -> Secrets and variables ->
+      # Actions" de este repo (nunca en el código) — ver docs/SETUP.md.
+      - name: Crear .env desde los secrets del repo
+        run: |
+          cat <<EOF > .env
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY=${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          GOOGLE_WEB_CLIENT_ID=${{ secrets.GOOGLE_WEB_CLIENT_ID }}
+          GOOGLE_IOS_CLIENT_ID=${{ secrets.GOOGLE_IOS_CLIENT_ID }}
+          EOF
+
+      - run: flutter pub get
+      - run: flutter build apk --debug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pocketbait-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk

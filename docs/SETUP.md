@@ -122,7 +122,31 @@ suyo con sus propias claves.
 
 ---
 
-## 5. Instalar Flutter y correr la app
+## 5. (Opción rápida) Probar en Android sin instalar nada en tu compu
+
+Si no quieres instalar Flutter/Android Studio todavía, puedes dejar que
+**GitHub compile el `.apk` por ti** y solo lo descargas:
+
+1. En GitHub, entra al repo → **Settings → Secrets and variables →
+   Actions → New repository secret**, y crea estos 4 secretos (uno por
+   uno), con los mismos valores que pusiste en tu `.env`:
+   - `SUPABASE_URL`
+   - `SUPABASE_PUBLISHABLE_KEY`
+   - `GOOGLE_WEB_CLIENT_ID`
+   - `GOOGLE_IOS_CLIENT_ID`
+2. Ve a la pestaña **Actions** del repo → en la lista de la izquierda
+   elige **"Compilar APK de Android"** → botón **"Run workflow"** →
+   asegúrate de elegir la rama `claude/screen-time-betting-app-iuk66z` →
+   **Run workflow**.
+3. Espera 3-5 minutos a que termine (ícono verde ✅).
+4. Dale clic a esa ejecución terminada → abajo, en **"Artifacts"**,
+   descarga **`pocketbait-debug-apk`** (es un .zip con el `.apk` adentro).
+5. Pasa ese `.apk` a un celular Android (por USB, WhatsApp, correo, Google
+   Drive, lo que sea) y ábrelo ahí para instalarlo — puede que Android te
+   pida activar "Instalar apps de orígenes desconocidos", es normal para
+   apps que no vienen de la Play Store todavía.
+
+## 6. Instalar Flutter y correr la app (para desarrollar de verdad)
 
 1. Instala el SDK de Flutter siguiendo la [guía oficial](https://docs.flutter.dev/get-started/install)
    para tu sistema operativo.
@@ -143,7 +167,7 @@ botón "Continuar con Google" funcionando de verdad.
 
 ---
 
-## 6. Nota sobre la Fase 2 (apuestas con dinero real)
+## 7. Nota sobre la Fase 2 (apuestas con dinero real)
 
 Antes de activar cualquier funcionalidad de dinero real (apuestas entre
 amigos o grupos), es indispensable:
