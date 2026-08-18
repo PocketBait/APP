@@ -6,6 +6,7 @@ import '../../../friends/presentation/widgets/profile_avatar.dart';
 import '../../domain/limit_proposal_app.dart';
 import '../../domain/permission_grant.dart';
 import '../providers/limits_providers.dart';
+import '../widgets/app_icon.dart';
 
 enum _DurationPreset {
   oneWeek('1 semana', Duration(days: 7)),
@@ -139,6 +140,8 @@ class _CreateProposalScreenState extends ConsumerState<CreateProposalScreen> {
                       value: selected,
                       onChanged: (value) => _toggleApp(entry, value ?? false),
                     ),
+                    AppIcon(appIdentifier: entry.identifier, size: 28),
+                    const SizedBox(width: AppSpacing.sm),
                     Expanded(child: Text(entry.displayName)),
                     if (selected) ...[
                       IconButton(

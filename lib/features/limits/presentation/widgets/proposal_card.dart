@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/utils/friendly_date.dart';
 import '../../../friends/domain/profile.dart';
 import '../../../friends/presentation/widgets/profile_avatar.dart';
 import '../../domain/limit_proposal.dart';
+import 'app_icon.dart';
 
 /// Tarjeta reusada para mostrar una propuesta de límite: quién la hizo /
 /// recibe, las apps con sus minutos diarios, y hasta cuándo dura.
@@ -27,9 +28,6 @@ class ProposalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    // Formato numérico a propósito: DateFormat con nombres de mes (MMM)
-    // requiere inicializar datos de localización aparte; dd/MM/yyyy no.
-    final dateFormat = DateFormat('dd/MM/yyyy');
 
     return Card(
       child: Padding(
@@ -59,35 +57,79 @@ class ProposalCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                _CountdownPill(endsAt: proposal.endsAt),
               ],
             ),
-            const SizedBox(height: AppSpacing.sm),
-            Wrap(
-              spacing: AppSpacing.xs,
-              runSpacing: AppSpacing.xs,
+            const SizedBox(height: AppSpacing.md),
+            Column(
               children: proposal.apps
-                  .map((app) => Chip(
-                        label: Text(
-                          '${app.appDisplayName} · ${app.dailyLimitMinutes} min/día',
+                  .map((app) => Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                        child: Row(
+                          children: [
+                            AppIcon(appIdentifier: app.appIdentifier, size: 28),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                              child: Text(
+                                app.appDisplayName,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ),
+                            Text(
+                              '${app.dailyLimitMinutes} min/día',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: scheme.outline,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ],
                         ),
                       ))
                   .toList(),
             ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              'Hasta el ${dateFormat.format(proposal.endsAt)}'
-              '${proposal.note?.isNotEmpty == true ? ' · "${proposal.note}"' : ''}',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: scheme.outline),
-            ),
+            if (proposal.note?.isNotEmpty == true) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                '"${proposal.note}"',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: scheme.outline, fontStyle: FontStyle.italic),
+              ),
+            ],
             if (trailing != null) ...[
               const SizedBox(height: AppSpacing.sm),
               trailing!,
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CountdownPill extends StatelessWidget {
+  const _CountdownPill({required this.endsAt});
+  final DateTime endsAt;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        friendlyRemaining(endsAt),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: scheme.outline,
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }
