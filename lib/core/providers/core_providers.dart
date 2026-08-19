@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/data/auth_repository.dart';
 import '../../features/friends/data/friends_repository.dart';
 import '../../features/limits/data/limits_repository.dart';
+import '../../features/profile/data/profile_repository.dart';
 import '../config/supabase_config.dart';
 
 /// Cliente único de Supabase, ya inicializado en `main.dart`. Todos los
@@ -21,4 +22,8 @@ final friendsRepositoryProvider = Provider<FriendsRepository>(
 
 final limitsRepositoryProvider = Provider<LimitsRepository>(
   (ref) => LimitsRepository(ref.watch(supabaseClientProvider)),
+);
+
+final profileRepositoryProvider = Provider<ProfileRepository>(
+  (ref) => ProfileRepository(ref.watch(supabaseClientProvider)),
 );

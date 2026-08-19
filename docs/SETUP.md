@@ -34,6 +34,9 @@ Tiempo estimado: 30-45 minutos la primera vez.
      Google/Apple)
    - [`supabase/migrations/0004_blocks_reports_unfriend.sql`](../supabase/migrations/0004_blocks_reports_unfriend.sql)
      (dejar de ser amigos, bloquear, reportar, amigos en común)
+   - [`supabase/migrations/0005_account_settings.sql`](../supabase/migrations/0005_account_settings.sql)
+     (Settings: restringe quién puede leer tu teléfono/fecha de
+     nacimiento, y agrega poder eliminar tu cuenta)
 
 > Si ya habías corrido migraciones anteriores, nada más corre la(s)
 > nuevas que falten — no hace falta repetir las que ya corriste.

@@ -16,7 +16,14 @@ import '../../features/limits/domain/permission_grant.dart';
 import '../../features/limits/presentation/screens/create_proposal_screen.dart';
 import '../../features/limits/presentation/screens/grant_access_screen.dart';
 import '../../features/limits/presentation/screens/limits_home_screen.dart';
+import '../../features/profile/presentation/screens/account_preferences_screen.dart';
+import '../../features/profile/presentation/screens/data_privacy_screen.dart';
+import '../../features/profile/presentation/screens/help_center_screen.dart';
+import '../../features/profile/presentation/screens/privacy_policy_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/profile/presentation/screens/security_screen.dart';
+import '../../features/profile/presentation/screens/user_agreement_screen.dart';
+import '../../features/profile/presentation/widgets/coming_soon_screen.dart';
 import '../providers/core_providers.dart';
 import 'go_router_refresh_stream.dart';
 
@@ -125,6 +132,48 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/limits/propose',
         builder: (context, state) =>
             CreateProposalScreen(grant: state.extra as PermissionGrant),
+      ),
+      GoRoute(
+        path: '/profile/account',
+        builder: (context, state) => const AccountPreferencesScreen(),
+      ),
+      GoRoute(
+        path: '/profile/security',
+        builder: (context, state) => const SecurityScreen(),
+      ),
+      GoRoute(
+        path: '/profile/privacy',
+        builder: (context, state) => const DataPrivacyScreen(),
+      ),
+      GoRoute(
+        path: '/profile/notifications',
+        builder: (context, state) => const ComingSoonScreen(
+          title: 'Notifications',
+          icon: Icons.notifications_outlined,
+          message: 'Las notificaciones push todavía no están listas — '
+              'por ahora te avisamos con la bolita roja dentro de la app.',
+        ),
+      ),
+      GoRoute(
+        path: '/profile/language',
+        builder: (context, state) => const ComingSoonScreen(
+          title: 'Language',
+          icon: Icons.language_outlined,
+          message: 'Por ahora PocketBait solo está disponible en español. '
+              'Más idiomas están en camino.',
+        ),
+      ),
+      GoRoute(
+        path: '/profile/help',
+        builder: (context, state) => const HelpCenterScreen(),
+      ),
+      GoRoute(
+        path: '/profile/privacy-policy',
+        builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      GoRoute(
+        path: '/profile/terms',
+        builder: (context, state) => const UserAgreementScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
